@@ -74,3 +74,59 @@ func main() {
 - **Minimize Active Routines**: Close idle goroutines proactively to cut down shutdown time.
 - **Optimized Timeouts**: Test and optimize the timeout based on empirical data from running applications.
 - **Profiler Use**: Leverage Go's profiling tools to investigate any shutdown performance issues related to resource handling.
+
+
+## Refactored "Basic Graceful Shutdown" Using `signal.NotifyContext`:
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
+func main() {
+	server := &http.Server{
+		Addr:    ":8080",
+		Handler: http.DefaultServeMux,
+	}
+
+	// Create a context that is cancelled when an interrupt or termination signal is received.
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
+
+	// Start the server in a separate goroutine.
+	go func() {
+		fmt.Println("Starting data processing server...")
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Printf("Server error: %v\n", err)
+		}
+	}()
+
+	// Wait for the signal (via context cancellation).
+	<-ctx.Done()
+	fmt.Println("Shutdown signal received")
+
+	// Give the server 5 seconds to shut down gracefully.
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		fmt.Printf("Server Shutdown Failed: %+v\n", err)
+	}
+	fmt.Println("Server gracefully stopped")
+```
+
+### Benefits:
+
+- `signal.NotifyContext` automatically binds OS signals to a context.
+- You no longer need to use `make(chan os.Signal)`.
+- The `ctx.Done()` channel makes it easy to integrate with other context-aware code (e.g., in `select` blocks).
+- The code is shorter, more readable, and idiomatic.
+  
+If you're using Go version **earlier than 1.16**, `signal.NotifyContext` won't be available, and you'll need to use the traditional `signal.Notify` approach with channels.

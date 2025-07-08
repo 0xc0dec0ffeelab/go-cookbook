@@ -1,11 +1,11 @@
 ---
 title: 'File System Operations in Go'
-description: 'Learn to perform essential file system operations in Go using the os and io/ioutil packages.'
+description: 'Learn to perform essential file system operations in Go using the os and io packages.'
 date: '2025-03-24'
 category: 'Tools'
 ---
 
-Go offers comprehensive support for file system operations through packages like `os` and `io/ioutil`. This guide explores basic file system operations such as creating, reading, updating, and deleting files or directories, as well as handling file attributes.
+Go offers comprehensive support for file system operations through packages like `os` and `io`. This guide explores basic file system operations such as creating, reading, updating, and deleting files or directories, as well as handling file attributes.
 
 ## Creating and Writing to a File
 
@@ -37,19 +37,19 @@ func main() {
 
 ## Reading from a File
 
-You can read an entire file into memory using `os.ReadFile` from the `io/ioutil` package:
+You can read an entire file into memory using `os.ReadFile`:
 
 ```go
 package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 )
 
 func main() {
-	data, err := ioutil.ReadFile("example.txt")
+	data, err := os.ReadFile("example.txt")
 	if err != nil {
 		log.Fatal(err)
 	}

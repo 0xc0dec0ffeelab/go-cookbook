@@ -49,11 +49,57 @@ func main() {
 
 	// Shutdown the server gracefully.
 	if err := server.Shutdown(ctx); err != nil {
-		fmt.Printf("Server Shutdown Failed:%+v", err)
+		fmt.Printf("Server shutdown failed:%+v", err)
 	}
 	fmt.Println("Server gracefully stopped")
 }
 ```
+
+## Using signal.NotifyContext
+
+Starting with Go 1.16, `signal.NotifyContext` simplifies graceful shutdown logic by creating a context that is canceled when specific signals are received.
+
+```go
+package main
+
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+)
+
+func main() {
+	// Context canceled on SIGINT or SIGTERM.
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
+
+	server := &http.Server{Addr: ":8080", Handler: http.DefaultServeMux}
+
+	go func() {
+		fmt.Println("Server listening on :8080")
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			fmt.Printf("Server error: %v\n", err)
+		}
+	}()
+
+	<-ctx.Done()
+	fmt.Println("Shutdown signal received")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := server.Shutdown(shutdownCtx); err != nil {
+		fmt.Printf("Server shutdown failed:%+v", err)
+	}
+	fmt.Println("Server gracefully stopped")
+}
+```
+
+> See the official example [os/signal.NotifyContext](https://pkg.go.dev/os/signal#example-NotifyContext).
 
 ## Best Practices
 

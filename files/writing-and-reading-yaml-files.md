@@ -61,7 +61,7 @@ package main
 import (
 	"fmt"
 	"gopkg.in/yaml.v3"
-	"io/ioutil"
+	"io"
 	"os"
 )
 
@@ -78,7 +78,7 @@ func main() {
 	}
 	defer file.Close()
 
-	data, err := ioutil.ReadAll(file)
+	data, err := io.ReadAll(file)
 	if err != nil {
 		panic(err)
 	}

@@ -17,14 +17,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"	
+	"log"
+	"os"
 )
 
 type LanguagePack map[string]string
 
 func loadLanguagePack(filename string) (LanguagePack, error) {
-	file, err := ioutil.ReadFile(filename)
+	file, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
 	}

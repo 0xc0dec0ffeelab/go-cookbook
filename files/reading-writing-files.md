@@ -1,11 +1,11 @@
 ---
 title: 'Reading, Writing Files'
-description: 'Learn how to read from and write to files in Go using the os and ioutil packages'
+description: 'Learn how to read from and write to files in Go using the os and io packages'
 date: '2025-03-24'
 category: 'Files'
 ---
 
-Go provides robust tools for handling file operations using the `os` and `io/ioutil` packages. This snippet will guide you through reading from and writing to files in Go.
+Go provides robust tools for handling file operations using the `os` and `io` packages. This snippet will guide you through reading from and writing to files in Go.
 
 ## Reading Files
 
@@ -16,12 +16,12 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 )
 
 func main() {
-	data, err := ioutil.ReadFile("example.txt")
+	data, err := os.ReadFile("example.txt")
 	if err != nil {
 		log.Fatalf("failed reading file: %s", err)
 	}
@@ -66,14 +66,13 @@ Writing data to a file is just as straightforward:
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 )
 
 func main() {
 	content := []byte("Hello, World!\n")
-	err := ioutil.WriteFile("example.txt", content, 0644)
+	err := os.WriteFile("example.txt", content, 0644)
 	if err != nil {
 		log.Fatalf("failed writing to file: %s", err)
 	}
@@ -114,7 +113,7 @@ func main() {
 
 - Forgetting to close files, leading to resource leaks
 - Not checking for errors and simply assuming file operations succeed
-- Using `ioutil.ReadFile` for large files without considering memory constraints
+- Using `os.ReadFile` for large files without considering memory constraints
 - Not considering file permissions when creating or writing to files
 
 ## Performance Tips
@@ -122,4 +121,4 @@ func main() {
 - Use `bufio` for reading large files line by line to reduce memory usage
 - Preallocate byte slices if you know the file size for performance gains
 - Consider using `os.File` methods directly for lower-level file operations
-- Avoid using `ioutil.WriteFile` for repeated small writes to reduce system calls
+- Avoid using `os.WriteFile` for repeated small writes to reduce system calls

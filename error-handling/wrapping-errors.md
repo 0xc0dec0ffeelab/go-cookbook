@@ -109,6 +109,118 @@ func performTask() error {
 }
 ```
 
+## Joining Multiple Errors
+
+Go 1.20 introduced `errors.Join` to combine multiple errors into a single error value. This is useful when multiple operations fail simultaneously:
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+	"io"
+	"os"
+)
+
+func main() {
+	err := processFiles()
+	if err != nil {
+		fmt.Println("Error processing files:", err)
+	}
+}
+
+func validateInput() error {
+	return errors.New("invalid input format")
+}
+
+func checkPermissions() error {
+	return os.ErrPermission
+}
+
+func readConfigFile() error {
+	return io.EOF
+}
+
+func processFiles() error {
+	var errs []error
+	
+	if err := validateInput(); err != nil {
+		errs = append(errs, fmt.Errorf("validation failed: %w", err))
+	}
+	
+	if err := checkPermissions(); err != nil {
+		errs = append(errs, fmt.Errorf("permission check failed: %w", err))
+	}
+	
+	if err := readConfigFile(); err != nil {
+		errs = append(errs, fmt.Errorf("config read failed: %w", err))
+	}
+	
+	if len(errs) > 0 {
+		return errors.Join(errs...)
+	}
+	
+	return nil
+}
+```
+
+## Combining Joining with Wrapping
+
+You can effectively combine `errors.Join` with traditional error wrapping for comprehensive error handling:
+
+```go
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func main() {
+	err := deployApplication()
+	if err != nil {
+		fmt.Println("Deployment failed:", err)
+	}
+}
+
+func startDatabase() error {
+	return errors.New("database connection timeout")
+}
+
+func loadConfiguration() error {
+	return errors.New("missing required config key")
+}
+
+func initializeCache() error {
+	return errors.New("cache server unreachable")
+}
+
+func deployApplication() error {
+	var deploymentErrors []error
+	
+	if err := startDatabase(); err != nil {
+		deploymentErrors = append(deploymentErrors, err)
+	}
+	
+	if err := loadConfiguration(); err != nil {
+		deploymentErrors = append(deploymentErrors, err)
+	}
+	
+	if err := initializeCache(); err != nil {
+		deploymentErrors = append(deploymentErrors, err)
+	}
+	
+	if len(deploymentErrors) > 0 {
+		joinedErr := errors.Join(deploymentErrors...)
+		return fmt.Errorf("application deployment failed with %d errors: %w", 
+			len(deploymentErrors), joinedErr)
+	}
+	
+	return nil
+}
+```
+
 ## Best Practices
 
 - **Use `%w` for Wrapping**: Wrap errors using `%w` in `fmt.Errorf` to allow unwrapping.
@@ -117,12 +229,14 @@ func performTask() error {
 
 ## Common Pitfalls
 
-- **Unwrapped Errors**: Failing to use `%w` results in unwrappable errors, breaking error chains.
-- **Lack of Context**: Adding insufficient context makes debugging difficult and error messages obscure.
 - **Overuse**: Avoid wrapping errors if it does not add significant value—overwrapping can clutter logs.
+- **Mixing nil Values with Join**: Calling `errors.Join` with nil values is safe, but be mindful that it filters them out automatically.
+- **Large Error Collections**: Joining too many errors can create unwieldy error messages that are difficult to parse.
 
 ## Performance Tips
 
 - **Avoid Excessive Wrapping**: Multiple unnecessary wraps can add overhead without providing additional benefits.
-- **Use Built-in Support**: Rely on Go’s built-in error package’s features for efficiency rather than implementing custom solutions.
-- **Profile Critical Sections**: Ensure error handling doesn’t become a bottleneck in performance-critical applications by profiling.
+- **Use Built-in Support**: Rely on Go's built-in error package's features for efficiency rather than implementing custom solutions.
+- **Profile Critical Sections**: Ensure error handling doesn't become a bottleneck in performance-critical applications by profiling.
+- **Preallocate Error Slices**: When collecting errors for joining, preallocate slices with known capacity to reduce memory allocations.
+- **Consider Error Frequency**: Use `errors.Join` judiciously in high-frequency code paths as it creates new error values and can impact performance.

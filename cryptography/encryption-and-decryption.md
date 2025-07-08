@@ -1,11 +1,11 @@
 ---
 title: 'Encryption and Decryption'
-description: 'Learn how to perform encryption and decryption in Go using the crypto/cipher package and popular libraries like OpenPGP.'
+description: 'Learn how to perform encryption and decryption in Go.'
 date: '2025-03-24'
 category: 'Cryptography'
 ---
 
-Cryptography in Go can be performed using various packages that provide implementations of common encryption algorithms. This snippet focuses on basic encryption and decryption using the `crypto/cipher` package and the more comprehensive OpenPGP library for high-level encryption.
+Cryptography in Go can be performed using various packages that provide implementations of common encryption algorithms. This snippet focuses on basic encryption and decryption using the `crypto/cipher` package.
 
 ## Basic Encryption and Decryption using AES
 
@@ -62,8 +62,8 @@ func decrypt(encryptedHex string, key []byte) (string, error) {
 }
 
 func main() {
-	key := []byte("golangcrypto73key") // 16 bytes key for AES-128.
-	plaintext := "golang encryption example"
+	key := []byte("examplekey123456") // 16 bytes key for AES-128
+	plaintext := "Hello, Go Cookbook!"
 
 	encrypted, err := encrypt(plaintext, key)
 	if err != nil {
@@ -78,54 +78,6 @@ func main() {
 	fmt.Printf("Decrypted: %s\n", decrypted)
 }
 ```
-
-## Encryption and Decryption using OpenPGP
-
-OpenPGP is a popular standard for encrypted communication. The `crypto/openpgp` package in Go offers a way to handle OpenPGP encryption and decryption for more complex requirements.
-
-```go
-package main
-
-import (
-	"bytes"
-	"fmt"
-	"io"
-	"golang.org/x/crypto/openpgp"
-)
-
-func encryptWithOpenPGP(plaintext []byte, recipient *openpgp.Entity) ([]byte, error) {
-	buf := new(bytes.Buffer)
-	w, err := openpgp.Encrypt(buf, []*openpgp.Entity{recipient}, nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-	_, err = w.Write(plaintext)
-	if err != nil {
-		return nil, err
-	}
-	w.Close()
-	return buf.Bytes(), nil
-}
-
-func decryptWithOpenPGP(ciphertext []byte, privKeyRing *openpgp.EntityList) ([]byte, error) {
-	md, err := openpgp.ReadMessage(bytes.NewBuffer(ciphertext), privKeyRing, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-	plaintext, err := io.ReadAll(md.UnverifiedBody)
-	if err != nil {
-		return nil, err
-	}
-	return plaintext, nil
-}
-
-func main() {
-	// Example goes here - loading keys from private key ring file, etc.
-	fmt.Println("Encryption with OpenPGP example")
-}
-```
-
-*Note: The OpenPGP example requires setting up keys which is beyond the scope of this snippet. Refer to the OpenPGP library documentation for proper implementation.*
 
 ## Best Practices
 

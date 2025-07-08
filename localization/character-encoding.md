@@ -19,7 +19,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 
 	"golang.org/x/text/encoding/charmap"
@@ -34,7 +34,7 @@ func main() {
 	reader := transform.NewReader(bytes.NewReader(encodedStr), charmap.ISO8859_1.NewDecoder())
 
 	// Read the transformed output.
-	decodedBytes, err := ioutil.ReadAll(reader)
+	decodedBytes, err := io.ReadAll(reader)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -56,8 +56,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
-	"io/ioutil"
 
 	"golang.org/x/text/encoding/charmap"
 	"golang.org/x/text/transform"
@@ -69,7 +69,7 @@ func main() {
 
 	// Convert to UTF-8.
 	reader := transform.NewReader(bytes.NewReader(data), charmap.ISO8859_1.NewDecoder())
-	utf8Data, err := ioutil.ReadAll(reader)
+	utf8Data, err := io.ReadAll(reader)
 	if err != nil {
 		log.Fatal(err)
 	}

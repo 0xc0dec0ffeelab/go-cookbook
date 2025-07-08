@@ -100,4 +100,20 @@ func main() {
 
 ## Best Practices
 
-- When using `
+- Always verify for nil pointers when navigating through custom linked list implementations to prevent runtime errors.
+
+## Common Pitfalls
+
+- Memory management: Ensure nodes are properly cleaned up when removed, particularly in circular linked lists.
+- Incorrect pointer updates during insertions and deletions can disrupt the list structure.
+- Failing to address edge cases such as empty lists, single-node lists, or operations on nil lists.
+- Opting for linked lists when slices would suffice; Go's slices are typically more efficient for many scenarios.
+- Traversal issues like infinite loops due to incorrect termination conditions or circular references.
+
+## Performance Tips
+
+- Linked lists can be more efficient than slices for frequent insertions and deletions at arbitrary positions.
+- Opt for doubly linked lists if you require bidirectional traversal or frequent middle deletions.
+- Utilize sync.Pool for node allocation in high-performance contexts to minimize garbage collection load.
+- Analyze your application to assess if the pointer chasing overhead in linked lists justifies the flexibility over slice operations.
+- Implement interfaces to generalize list operations, facilitating easier transitions between different implementations based on performance needs.

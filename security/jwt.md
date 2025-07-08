@@ -1,11 +1,11 @@
 ---
 title: 'Working with JWT in Go'
-description: 'Learn how to generate, parse, and validate JSON Web Tokens (JWTs) in Go using the popular go-jose.v2 library'
+description: 'Learn how to generate, parse, and validate JSON Web Tokens (JWTs) in Go using the go-jose library'
 date: '2025-03-24'
 category: 'Security'
 ---
 
-JSON Web Tokens (JWTs) are used extensively for securing APIs and managing user sessions. In Go, the `go-jose.v2` library is a popular choice for handling JWTs due to its comprehensive support for JSON Web Encryption (JWE) and JSON Web Signature (JWS).
+JSON Web Tokens (JWTs) are used extensively for securing APIs and managing user sessions. In Go, the `go-jose` library is a popular choice for handling JWTs due to its comprehensive support for JSON Web Encryption (JWE) and JSON Web Signature (JWS).
 
 ## Generating a JWT
 
@@ -19,8 +19,8 @@ import (
 	"log"
 	"time"
 
-	jose "gopkg.in/square/go-jose.v2"
-	jwt "gopkg.in/square/go-jose.v2/jwt"
+	"github.com/go-jose/go-jose/v4"
+	"github.com/go-jose/go-jose/v4/jwt"
 )
 
 func main() {
@@ -42,7 +42,7 @@ func main() {
 	}
 
 	// Create and sign the JWT.
-	raw, err := jwt.Signed(signer).Claims(cl).CompactSerialize()
+	raw, err := jwt.Signed(signer).Claims(cl).Serialize()
 	if err != nil {
 		log.Fatalf("Failed to create JWT: %v", err)
 	}
@@ -62,8 +62,8 @@ import (
 	"fmt"
 	"log"
 
-	jose "gopkg.in/square/go-jose.v2"
-	jwt "gopkg.in/square/go-jose.v2/jwt"
+	"github.com/go-jose/go-jose/v4"
+	"github.com/go-jose/go-jose/v4/jwt"
 )
 
 func main() {
@@ -74,7 +74,7 @@ func main() {
 	key := []byte("my-secret-key")
 
 	// Parse the JWT.
-	token, err := jwt.ParseSigned(rawJWT)
+	token, err := jwt.ParseSigned(rawJWT, []jose.SignatureAlgorithm{jose.HS256})
 	if err != nil {
 		log.Fatalf("Invalid JWT: %v", err)
 	}

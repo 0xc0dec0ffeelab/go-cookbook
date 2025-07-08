@@ -75,19 +75,19 @@ Run with:
 go run tasks.go add "Review code" -p 2
 ```
 
-## Quick CLI with Urfave/cli
+## Quick CLI with urfave/cli
 
 ```go
 package main
 
 import (
 	"fmt"
-	"github.com/urfave/cli/v2"
+	"github.com/urfave/cli/v3"
 	"os"
 )
 
 func main() {
-	app := &cli.App{
+	app := &cli.Command{
 		Name: "tasks",
 		Commands: []*cli.Command{
 			{
@@ -123,10 +123,9 @@ go run tasks.go list --completed
 
 ## Best Practices
 
-- Consider user-friendly error messages and application usage information.
+- Provide user-friendly error messages and application usage information.
 - Keep commands modular and use subcommands for better organization.
 - Make use of external libraries when advanced features are necessary, but keep dependencies minimal.
-- Use Go's `flag` package for simple applications and third-party libraries like `Cobra` or `urfave/cli` for complex needs.
 
 ## Common Pitfalls
 

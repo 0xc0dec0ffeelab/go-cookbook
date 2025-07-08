@@ -5,7 +5,7 @@ date: '2025-03-24'
 category: 'Files'
 ---
 
-Retrieving the list of files in a directory is a common task that can be easily accomplished in Go using the `os` and `io/ioutil` packages. Below are examples demonstrating different approaches to listing files in a directory.
+Retrieving the list of files in a directory is a common task that can be easily accomplished in Go using the `os` package. Below are examples demonstrating different approaches to listing files in a directory.
 
 ## Basic Directory Listing
 
@@ -102,7 +102,7 @@ func main() {
 
 ## Performance Tips
 
-- Use `os.ReadDir` for a more efficient and safer way to list directories compared to older methods like `ioutil.ReadDir`.
+- Use `os.ReadDir` for a more efficient and safer way to list directories.
 - For extensive directory structures, consider using buffered output to improve performance.
 - Parallelize the processing of files if additional operations are performed on them.
 - Minimize the number of allocations by reusing slices or pre-allocating based on an estimated number of files.

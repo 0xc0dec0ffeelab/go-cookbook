@@ -90,6 +90,6 @@ func main() {
 
 ## Performance Tips
 
-- For large JSON files, stream processing using `json.Decoder` rather than loading all data into memory with `ioutil.ReadFile`.
+- For large JSON files, stream processing using `json.Decoder` rather than loading all data into memory with `os.ReadFile`.
 - Use buffered I/O (`bufio`) for better performance when reading or writing large files.
 - Minimize memory footprint by using `interface{}` for unmarshalling only when necessary, and prefer working with specific data types.

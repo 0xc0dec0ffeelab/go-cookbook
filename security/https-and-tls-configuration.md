@@ -82,8 +82,9 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
+	"os"
 )
 
 func main() {
@@ -94,7 +95,7 @@ func main() {
 	}
 
 	// Load CA cert.
-	caCert, err := ioutil.ReadFile("ca.crt")
+	caCert, err := os.ReadFile("ca.crt")
 	if err != nil {
 		panic(err)
 	}
@@ -123,7 +124,7 @@ func main() {
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)
 	}
